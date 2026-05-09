@@ -48,9 +48,10 @@ class Transaction extends Model
 
     public function scopeCurrentMonth($query)
     {
-        return $query
-            ->whereMonth('transaction_date', now()->month)
-            ->whereYear('transaction_date', now()->year);
+        return $query->whereBetween('transaction_date', [
+            now()->startOfMonth()->toDateString(),
+            now()->endOfMonth()->toDateString(),
+        ]);
     }
 
     public function scopeForUser($query, int $userId)

@@ -30,16 +30,18 @@ class DashboardController extends Controller
                 'total'    => $t->total,
             ]);
 
+        // Compatible PostgreSQL et MySQL
         $monthly = Transaction::forUser($user->id)
             ->select(
-                DB::raw('MONTH(transaction_date) as month'),
-                DB::raw('YEAR(transaction_date) as year'),
+                DB::raw("EXTRACT(MONTH FROM transaction_date) as month"),
+                DB::raw("EXTRACT(YEAR FROM transaction_date) as year"),
                 'type',
                 DB::raw('SUM(amount) as total')
             )
             ->where('transaction_date', '>=', now()->subMonths(5)->startOfMonth())
-            ->groupBy('year', 'month', 'type')
-            ->orderBy('year')->orderBy('month')
+            ->groupBy(DB::raw("EXTRACT(YEAR FROM transaction_date)"), DB::raw("EXTRACT(MONTH FROM transaction_date)"), 'type')
+            ->orderBy(DB::raw("EXTRACT(YEAR FROM transaction_date)"))
+            ->orderBy(DB::raw("EXTRACT(MONTH FROM transaction_date)"))
             ->get();
 
         $recent = Transaction::forUser($user->id)
