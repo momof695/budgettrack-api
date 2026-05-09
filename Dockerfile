@@ -3,7 +3,7 @@ FROM php:8.2-cli
 # Extensions PHP nécessaires
 RUN apt-get update && apt-get install -y \
     curl zip unzip git libpq-dev libonig-dev libxml2-dev \
-    && docker-php-ext-install pdo pdo_mysql mbstring xml bcmath
+    && docker-php-ext-install pdo pdo_mysql pdo_pgsql mbstring xml bcmath
 
 # Installer Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
